@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -20,6 +19,12 @@
       padding: 1rem 2rem;
       text-align: center;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
     }
 
     .products {
@@ -27,6 +32,7 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
       padding: 2rem;
+      animation: fadeIn 1s ease-in;
     }
 
     .product {
@@ -36,26 +42,16 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      transition: transform 0.3s;
     }
 
-    .product img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
+    .product:hover {
+      transform: scale(1.05);
     }
 
-    .product-details {
-      padding: 1rem;
-      flex: 1;
-    }
-
-    .product-details h3 {
-      margin: 0 0 10px;
-    }
-
-    .product-details p {
-      font-size: 14px;
-      color: #555;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .order-form {
@@ -65,29 +61,13 @@
       margin: 2rem auto;
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      animation: bounceIn 1s ease;
     }
 
-    .order-form input, .order-form textarea, .order-form select {
-      width: 100%;
-      padding: 10px;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .order-form button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .order-form button:hover {
-      background: #45a049;
+    @keyframes bounceIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
     footer {
@@ -95,6 +75,7 @@
       padding: 1rem;
       background: #eee;
       margin-top: 2rem;
+      animation: fadeIn 1.5s ease;
     }
   </style>
 </head>
@@ -112,7 +93,6 @@
         <p>Потужна праска з парою — ідеально для щоденного користування.</p>
       </div>
     </div>
-
     <div class="product">
       <img src="https://i.citrus.world/imgcache/size_800/uploads/shop/a/7/a717b10443e531276f2f960070ccd4eb.jpg" alt="Пилосос" />
       <div class="product-details">
@@ -143,25 +123,17 @@
   </footer>
 
   <script>
-    const token = process.env.BOT_TOKEN;
+    const token = "1849071745:AAGqTSGGtHBbao_rHgSzL0oj3953lACaZFI";
     const chat_id = "1139474131"; 
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const form = e.target;
-      const name = form.name.value;
-      const phone = form.phone.value;
-      const product = form.product.value;
-      const comments = form.comments.value;
-
-      const message = `
-🛒 *Нове замовлення!*
-👤 Ім'я: ${name}
-📞 Телефон: ${phone}
-📦 Товар: ${product}
-💬 Коментар: ${comments || "Немає"}
-      `;
+      const formData = new FormData(e.target);
+      const message = `🛒 *Нове замовлення!*
+👤 Ім'я: ${formData.get("name")}
+📞 Телефон: ${formData.get("phone")}
+📦 Товар: ${formData.get("product")}
+💬 Коментар: ${formData.get("comments") || "Немає"}`;
 
       fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
@@ -178,7 +150,7 @@
       .then(data => {
         if (data.ok) {
           document.getElementById("result").textContent = "Замовлення надіслано!";
-          form.reset();
+          e.target.reset();
         } else {
           document.getElementById("result").textContent = "Помилка при відправці.";
         }
@@ -190,3 +162,4 @@
   </script>
 </body>
 </html>
+
