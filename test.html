@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Відправка в Telegram бот</title>
+</head>
+<body>
+
+<h2>Відправити повідомлення в Telegram бот</h2>
+
+<form id="tgForm">
+  <label for="message">Повідомлення:</label><br />
+  <textarea id="message" rows="4" cols="50" placeholder="Введіть текст..."></textarea><br /><br />
+  <button type="submit">Відправити</button>
+</form>
+
+<p id="status"></p>
+
+<script>
+  const botToken = '1849071745:AAGqTSGGtHBbao_rHgSzL0oj3953lACaZFI';
+  const chatId = 'YOUR_CHAT_ID'; // сюди встав свій chat_id (можеш отримати через @userinfobot)
+
+  const form = document.getElementById('tgForm');
+  const statusEl = document.getElementById('status');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const message = document.getElementById('message').value.trim();
+    if (!message) {
+      statusEl.textContent = 'Введіть повідомлення!';
+      return;
+    }
+
+    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        statusEl.textContent = 'Повідомлення відправлено ✅';
+        form.reset();
+      } else {
+        statusEl.textContent = 'Помилка: ' + data.description;
+      }
+    } catch (error) {
+      statusEl.textContent = 'Помилка мережі';
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>
