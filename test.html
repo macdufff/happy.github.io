@@ -9,22 +9,16 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f7fa;
+      background: #f2f5f9;
       color: #333;
     }
 
     header {
       background-color: #4CAF50;
       color: white;
-      padding: 1rem 2rem;
+      padding: 1.5rem 2rem;
       text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      animation: slideDown 0.8s ease-out;
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-100%); }
-      to { transform: translateY(0); }
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .products {
@@ -32,26 +26,38 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
       padding: 2rem;
-      animation: fadeIn 1s ease-in;
     }
 
     .product {
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s;
+      transition: transform 0.3s ease;
     }
 
     .product:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .product img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .product-details {
+      padding: 1.2rem;
+    }
+
+    .product-details h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .product-details p {
+      font-size: 0.9rem;
+      color: #555;
     }
 
     .order-form {
@@ -59,23 +65,37 @@
       background: white;
       max-width: 500px;
       margin: 2rem auto;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      animation: bounceIn 1s ease;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
     }
 
-    @keyframes bounceIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      60% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(1); }
+    .order-form input, .order-form textarea, .order-form select {
+      width: 100%;
+      padding: 12px;
+      margin: 0.5rem 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .order-form button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .order-form button:hover {
+      background: #45a049;
     }
 
     footer {
       text-align: center;
-      padding: 1rem;
+      padding: 1.5rem;
       background: #eee;
-      margin-top: 2rem;
-      animation: fadeIn 1.5s ease;
     }
   </style>
 </head>
@@ -93,6 +113,7 @@
         <p>Потужна праска з парою — ідеально для щоденного користування.</p>
       </div>
     </div>
+
     <div class="product">
       <img src="https://i.citrus.world/imgcache/size_800/uploads/shop/a/7/a717b10443e531276f2f960070ccd4eb.jpg" alt="Пилосос" />
       <div class="product-details">
@@ -128,12 +149,14 @@
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const formData = new FormData(e.target);
-      const message = `🛒 *Нове замовлення!*
-👤 Ім'я: ${formData.get("name")}
-📞 Телефон: ${formData.get("phone")}
-📦 Товар: ${formData.get("product")}
-💬 Коментар: ${formData.get("comments") || "Немає"}`;
+
+      const form = e.target;
+      const name = form.name.value;
+      const phone = form.phone.value;
+      const product = form.product.value;
+      const comments = form.comments.value;
+
+      const message = `🛒 *Нове замовлення!*\n👤 Ім'я: ${name}\n📞 Телефон: ${phone}\n📦 Товар: ${product}\n💬 Коментар: ${comments || "Немає"}`;
 
       fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
@@ -150,7 +173,7 @@
       .then(data => {
         if (data.ok) {
           document.getElementById("result").textContent = "Замовлення надіслано!";
-          e.target.reset();
+          form.reset();
         } else {
           document.getElementById("result").textContent = "Помилка при відправці.";
         }
